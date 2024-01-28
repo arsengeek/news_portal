@@ -2,7 +2,7 @@ from django import template
 
 register = template.Library()
 
-WORDS_MAT = ['Bleat', 'Govno']
+WORDS_MAT = ['fuck', 'beatch', 'Fuck', 'Beatch','shit','Shit', 'Nigga', 'nigga']
 
 @register.filter(name='currency')
 def currency(value):
