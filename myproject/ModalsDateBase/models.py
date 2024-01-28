@@ -87,7 +87,10 @@ class Post(models.Model):
         post_ratings = list(Post.objects.filter(author=self).order_by('-raiting_post').values_list('title', Post.preview()))
     
         print(post_ratings[0])
-    
+        
+        
+    def __str__(self):
+        return self.title
         
 class PostCatigory(models.Model):
     """

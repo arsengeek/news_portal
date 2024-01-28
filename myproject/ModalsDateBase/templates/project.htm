@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <body>
+        <h1> This Day is {{post|length}} Posts</h1>
+        {%for posts in post%}
+        <h1>{{posts}}</h1>
+        <h3> {{time_now|date:' d M Y'}}
+        <h4>  - {{posts.text_post|truncatechars:20}}
+        {%endfor%}
+    </body>
+{% endblock %}
