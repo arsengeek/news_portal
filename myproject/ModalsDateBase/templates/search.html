@@ -1,8 +1,10 @@
-{% extends 'base.html' %}
-
-{% block content %}
-    <body>
-        <h1> This Page is {{post|length}} Posts</h1>
+{%block content%}
+<form active='' method='get'>
+    {{form.as_p}}
+<input type='submit' value='seach'>
+</form>
+{{post}}
+<h1> This Page is {{post|length}} Posts</h1>
         {%for posts in post%}
         <h1>{{posts}}</h1>
         <h3> {{time_now|date:' d M Y'}}
@@ -28,6 +30,4 @@
             <a href="?page={{ page_obj.paginator.num_pages }}">{{ page_obj.paginator.num_pages }}</a>
         {% endif %}
     {% endif %}
- 
-    </body>
-{% endblock %}
+{%endblock content%}

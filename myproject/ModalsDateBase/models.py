@@ -40,16 +40,10 @@ class Catigory(models.Model):
     """
         subjects for news/post, this class is stores sub
     """
+    category = models.CharField(max_length=50, unique=True)
     
-    CATIGORY = [
-        ('sport', 'sport'),
-        ('game', 'game'),
-        ('animals', 'animals'),
-        ('food','food'),
-        ('coding', 'coding')
-    ]
-    
-    subjects = models.CharField(max_length=10,choices=CATIGORY, unique=True)
+    def __str__(self) -> str:
+        return self.category
     
 class Post(models.Model):
     """
@@ -59,9 +53,8 @@ class Post(models.Model):
     title = models.CharField(max_length=50)
     text_post = models.TextField()
     author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    content_post = models.CharField(max_length=20,choices=[('news', 'news'), ('article', 'article')])
+    content_post = models.ForeignKey(to='Catigory',related_name='post_category', on_delete=models.CASCADE)
     time_post = models.DateTimeField(auto_now_add=True)
-    catigory_post = models.ManyToManyField('Catigory', through='PostCatigory')
     raiting_post = models.IntegerField(default=0)
     
     #preview text
