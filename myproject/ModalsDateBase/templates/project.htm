@@ -5,7 +5,7 @@
         <h1> This Page is {{post|length}} Posts</h1>
         {%for posts in post%}
         <h1>{{posts}}</h1>
-        <h3> {{time_now|date:' d M Y'}}
+        <h3> {{posts.time_post|date:'d M Y T H:i' }}
         <h4>  - {{posts.text_post|truncatechars:20}}
         {%endfor%}
         <hr>

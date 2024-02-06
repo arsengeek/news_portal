@@ -1,15 +1,23 @@
-{%block content%}
-<form active='' method='get'>
-    {{form.as_p}}
-<input type='submit' value='seach'>
-</form>
-{{post}}
-<h1> This Page is {{post|length}} Posts</h1>
-        {%for posts in post%}
-        <h1>{{posts}}</h1>
-        <h3> {{time_now|date:' d M Y'}}
-        <h4>  - {{posts.text_post|truncatechars:20}}
-        {%endfor%}
+
+{% block content %}
+
+  <!-- Optionally, you can display the applied filters -->
+  <form action='' method='post'>
+  {% if filterset %}
+    <h3>Applied Filters:</h3>
+    {{ filterset.form.as_p }}
+      {% csrf_token %} 
+    <input type='submit' value='search'/>
+  {% endif %}
+    </form>
+
+  <h2>Search Results</h2>
+  {% for post in search %}
+  <p>{{ post.title }}</p>
+  <p>{{ post.text_post }}</p>
+  <hr>
+{% endfor %}
+
         <hr>
         {% if page_obj.has_previous %}
         <a href="?page=1">1</a>

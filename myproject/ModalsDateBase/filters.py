@@ -3,7 +3,12 @@ from django.forms import DateTimeInput
 from .models import Post, Catigory
 
 class PostFilter(FilterSet):
-    added_after = DateTimeFilter(
+    categories = ModelChoiceFilter(
+        field_name = 'content_post',
+        queryset = Catigory.objects.all(),
+        label = 'Categories'
+    )
+    time_post = DateTimeFilter(
         field_name='time_post',
         lookup_expr='gt',
         widget=DateTimeInput(

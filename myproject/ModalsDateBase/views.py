@@ -35,10 +35,30 @@ class News_list(ListView):
         context['form'] = self.form
         return context
     
-class SearchNews(forms.ModelForm):
-    form_class = PostFormFilter
+class SearchNews(ListView):
     model = Post
+    ordering = ''
     template_name = 'search.html' 
+    context_object_name = 'search'
+    
+    def get_queryset(self):
+        queryset =  super().get_queryset()
+        self.filterset = PostFilter(self.request.POST, queryset)
+        return self.filterset.qs
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["filterset"] = self.filterset
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        # Handle POST request logic here
+        # For example, perform form submission or other operations
+        return self.get(request, *args, **kwargs)
+        
+        
+        
+    
     
 class News_Detail(DetailView):
     model = Post

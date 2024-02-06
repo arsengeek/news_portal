@@ -5,7 +5,7 @@
         {% load custom_filter%}
         <h1> This Day is {{one_post|length}} Posts</h1>
         <h2> Post: {{one_post.title}} </h2>
-        <h3> {{time_now|date:' d M Y'}}</h3>
+        <h3> {{one_post.time_post|date:' d M Y T H:i'}}</h3>
         <h4>  - {{one_post.text_post|currency}}</h4>
             
     </body>
