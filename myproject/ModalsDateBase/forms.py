@@ -1,17 +1,18 @@
 from django import forms
-from .models import Post, Catigory
+from .models import Post, Catigory, Author
 import datetime
 from django.http import request
 
 
 class CreatePost(forms.ModelForm):
+    
     class Meta:
         model = Post
         fields = [
             'title',
-            'author',
            'text_post',
-           'content_post'
+           'content_post',
+           'author'
         ]
     
 class UpdatePost(forms.ModelForm):
@@ -19,7 +20,7 @@ class UpdatePost(forms.ModelForm):
         model = Post
         fields = [
             'title',
-            'author',
+            
            'text_post',
            'content_post'
         ]

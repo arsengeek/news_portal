@@ -2,19 +2,23 @@
 
 {% block content %}
     <body>
+        <h1> Wellcome back {{request.user}}</h>
         {%if perms.ModalsDateBase.add_post%}
-        <a href="{% url 'create_post' %}">Create post</a>
+        <a href="{% url 'create_post' %}"> Create post</a>
         {%endif%}
         <h1> This Page is {{post|length}} Posts</h1>
         {%for posts in post%}
         <h1>{{posts}}</h1>
+        <h3>Author: {{posts.author.user}}</3>
         <h3> {{posts.time_post|date:'d M Y T H:i' }}
         <h4>  - {{posts.text_post|truncatechars:20}}
             {%if perms.ModalsDateBase.delete_post%}
             <a href= {% url 'delete_post' posts.id%}>Delete post</a>
             {%endif%}
             {%if perms.ModalsDateBase.change_post%}
+            {%if posts.author.user == request.user%}
             <a href= {% url 'update_post' posts.id%}>Update post</a>
+            {%endif%}
             {%endif%}
         {%endfor%}
         <hr>

@@ -45,6 +45,7 @@ class Catigory(models.Model):
     def __str__(self) -> str:
         return self.category
     
+    
 class Post(models.Model):
     """
         This model should contain articles and news that are created by users. Each object can have one or more categories
