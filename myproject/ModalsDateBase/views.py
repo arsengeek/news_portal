@@ -9,6 +9,8 @@ from .filters import *
 from .forms import CreatePost, PostFormFilter, UpdatePost
 from django import forms
 from django.urls import reverse_lazy
+from django.contrib.auth.mixins import LoginRequiredMixin , PermissionRequiredMixin
+from django.contrib.auth.decorators import user_passes_test
 
 class News_list(ListView):
     model = Post
@@ -71,7 +73,8 @@ class News_Detail(DetailView):
         context['time_now'] = datetime.utcnow()
         return context
 
-class EditPost(UpdateView):
+class EditPost(PermissionRequiredMixin,UpdateView):
+    permission_required = ('ModalsDateBase.change_post')
     form_class = UpdatePost
     model = Post
     template_name = 'update_post.html'
@@ -93,13 +96,25 @@ def multiply(request):
 
     return HttpResponse(html)
 
+# def check_perm(user):
+#     if user.has_perm('create_post'):
+#         return True
+#     else:
+#         return False
+
+
+def is_author(user):
+    return user.groups.filter(name='authors').exists()
+
+@user_passes_test(is_author)
 def create_post(request):
     if request.method == 'POST':
         form = CreatePost(request.POST)
         if form.is_valid():
             form.save()
             return HttpResponseRedirect('/news/')
-    form = CreatePost()
+    else:
+        form = CreatePost()
     return render(request, 'create_post.html', {'form': form})
 
 def search(request):
