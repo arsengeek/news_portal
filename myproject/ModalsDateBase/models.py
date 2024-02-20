@@ -1,6 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-# Create your models here.
+from django.urls import reverse
+from django.db.models.signals import post_save, m2m_changed
+from django.dispatch import receiver
+from django.core.mail import EmailMultiAlternatives
 
 class Author(models.Model):
     """
@@ -53,10 +56,14 @@ class Post(models.Model):
     
     title = models.CharField(max_length=50)
     text_post = models.TextField()
-    author = models.ForeignKey(Author, on_delete=models.CASCADE)
-    content_post = models.ForeignKey(to='Catigory',related_name='post_category', on_delete=models.CASCADE)
+    author = models.ManyToManyField(Author)
+    content_post = models.ForeignKey(to='Catigory',related_name='post_category', on_delete=models.CASCADE, default='Default')
     time_post = models.DateTimeField(auto_now_add=True)
     raiting_post = models.IntegerField(default=0)
+    
+    
+    def get_absolute_url(self):
+        return reverse('news_detail', kwargs={'pk': self.pk})
     
     #preview text
     def preview(self):
@@ -85,7 +92,29 @@ class Post(models.Model):
         
     def __str__(self):
         return self.title
+     
+@receiver(m2m_changed, sender=Post.author)
+def post_created(instance, action, **kwargs):
+    if action == 'post_add':
+        print("New post added to category:")
+        categories = instance.categories.all()
+        emails = User.objects.filter(subscribers__category__in=categories).values_list('email', flat=True)
         
+        subject = f'New post: {instance.title}'
+
+        text_content = (
+            f'Post: {instance.title}\n'
+            f'http://127.0.0.1:8000{instance.get_absolute_url()}'
+        )
+        html_content = (
+            f'{instance.title}<br>'
+            f'<a href="http://127.0.0.1{instance.get_absolute_url()}">'
+        )
+    
+        for email in emails:
+            msg = EmailMultiAlternatives(subject, text_content, None, [email])
+            msg.send()
+                   
 class PostCatigory(models.Model):
     """
         Connecting to models Post and Catigory
@@ -121,3 +150,6 @@ class Best_rating_user(models.Model):
     
         print(user_ratings[0])
     
+class Subscription(models.Model):
+    user = models.ForeignKey(to=User, on_delete=models.CASCADE, related_name='subcribers' )
+    category = models.ForeignKey(to=Catigory, on_delete=models.CASCADE, related_name='subcribers')

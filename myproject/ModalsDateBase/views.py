@@ -2,15 +2,18 @@ from typing import Any
 from django.db.models.query import QuerySet
 from django.shortcuts import render
 from django.views.generic import ListView,DetailView, UpdateView, DeleteView
-from .models import Post
+from .models import Post, Author, Subscription
 from datetime import datetime
-from django.http import HttpResponse, request, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from .filters import *
 from .forms import CreatePost, PostFormFilter, UpdatePost
 from django import forms
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin , PermissionRequiredMixin
-from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.decorators import user_passes_test, login_required
+from django.views.decorators.csrf import csrf_protect
+from django.db.models import Exists, OuterRef
+
 
 class News_list(ListView):
     model = Post
@@ -58,9 +61,6 @@ class SearchNews(ListView):
         # For example, perform form submission or other operations
         return self.get(request, *args, **kwargs)
         
-        
-        
-    
     
 class News_Detail(DetailView):
     model = Post
@@ -106,12 +106,16 @@ def multiply(request):
 def is_author(user):
     return user.groups.filter(name='authors').exists()
 
-@user_passes_test(is_author)
+
 def create_post(request):
     if request.method == 'POST':
         form = CreatePost(request.POST)
         if form.is_valid():
-            form.save()
+            current_user = request.user
+            author = Author.objects.get(user=current_user)
+            post = form.save(commit=False)
+            post.author = author
+            post.save()
             return HttpResponseRedirect('/news/')
     else:
         form = CreatePost()
@@ -124,3 +128,34 @@ def search(request):
         
         
     return render(request, 'search.html', {'form': form})
+
+
+@login_required
+@csrf_protect
+def subscriptions(request):
+    if request.method == 'POST':
+        category_id = request.POST.get('category_id')
+        category = Catigory.objects.get(id=category_id)
+        action = request.POST.get('action')
+
+        if action == 'subscribe':
+            Subscription.objects.create(user=request.user, category=category)
+        elif action == 'unsubscribe':
+            Subscription.objects.filter(
+                user=request.user,
+                category=category,
+            ).delete()
+
+    categories_with_subscriptions = Catigory.objects.annotate(
+        user_subscribed=Exists(
+            Subscription.objects.filter(
+                user=request.user,
+                category=OuterRef('pk'),
+            )
+        )
+    ).order_by('category')
+    return renderв(
+        request,
+        'subscriptions.html',
+        {'categories': categories_with_subscriptions},
+    )

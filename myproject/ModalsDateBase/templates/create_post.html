@@ -1,7 +1,21 @@
-{%block content%}
-<h1>Create Post</h1>
-<form action='' method='post'>
-    {% csrf_token %}
-    {{form.as_p}}
-    <input type='submit' value='Create Post'>
-{% endblock %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post</title>
+    <!-- Подключение стилей -->
+    <link rel='stylesheet' href='{% static "style_createPost.css" %}'/>
+</head>
+<body>
+    {% block content %}
+    <h1 class='post1'>Create Post</h1>
+    <form action='' method='post'>
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type='submit' value='Create Post'>
+    </form>
+    {% endblock %}
+</body>
+</html>

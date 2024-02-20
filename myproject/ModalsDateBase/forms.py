@@ -12,8 +12,21 @@ class CreatePost(forms.ModelForm):
             'title',
            'text_post',
            'content_post',
-           'author'
         ]
+    
+    # def __init__(self, *args, **kwargs):
+    #     self.author = kwargs.pop('author', None)
+    #     super(CreatePost, self).__init__(*args, **kwargs)
+    #     if self.author:
+    #         self.instance.author = self.author
+
+    # def save(self, commit=True):
+    #     instance = super(CreatePost, self).save(commit=False)
+    #     if not instance.author_id:
+    #         instance.author = self.author
+    #     if commit:
+    #         instance.save()
+    #     return instance
     
 class UpdatePost(forms.ModelForm):
     class Meta:
